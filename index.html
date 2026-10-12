@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Subra — Usanifu na Sanaa</title>
+<style>
+  :root{
+    --bg1:#140a24; --bg2:#070412;
+    --accent:#ff3df0; --accent2:#3df0ff; --gem:#7a5cff;
+    --glass:rgba(255,255,255,0.07); --glass-border:rgba(255,255,255,0.22);
+    --text-dim:rgba(255,255,255,.65);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top: env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(122,92,255,.3), transparent 45%),
+      radial-gradient(circle at 85% 30%, rgba(255,61,240,.2), transparent 50%),
+      radial-gradient(circle at 50% 90%, rgba(61,240,255,.15), transparent 50%),
+      linear-gradient(170deg, var(--bg1), var(--bg2));
+    background-attachment:fixed; color:#fff; font-family:-apple-system, system-ui, sans-serif;
+    padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+    overflow-x:hidden;
+  }
+  section{ padding:80px 24px; max-width:640px; margin:0 auto; }
+
+  .hero{ min-height:92vh; display:flex; flex-direction:column; justify-content:center; text-align:center; }
+  .hero .loc{ font-size:.8rem; color:var(--text-dim); letter-spacing:.04em; margin-bottom:14px; }
+  .hero h1{
+    font-size:clamp(2.4rem, 11vw, 3.6rem); margin:0 0 14px; line-height:1.05; font-weight:800;
+    background:linear-gradient(100deg,var(--gem),var(--accent) 60%,var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p{ font-size:1.05rem; color:var(--text-dim); max-width:420px; margin:0 auto 28px; line-height:1.5; }
+  a.cta{
+    display:inline-block; padding:13px 28px; border-radius:999px; text-decoration:none;
+    background:linear-gradient(90deg,var(--accent),var(--gem)); color:#0a0414; font-weight:700; font-size:.9rem;
+  }
+
+  .about h2{ font-size:1.6rem; margin:0 0 16px; }
+  .about p{ color:var(--text-dim); line-height:1.6; font-size:1rem; }
+  .about .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .about .tag{ padding:6px 14px; border-radius:999px; font-size:.78rem; background:var(--glass); border:1px solid var(--glass-border); backdrop-filter: blur(10px); }
+
+  .work h2{ font-size:1.6rem; margin:0 0 6px; padding:0 24px; max-width:640px; margin-left:auto; margin-right:auto; }
+  .work .sub{ color:var(--text-dim); font-size:.9rem; margin:0 0 28px; padding:0 24px; max-width:640px; margin-left:auto; margin-right:auto; }
+  .track{ display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory; padding:20px 10vw 30px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .track::-webkit-scrollbar{display:none;}
+  .card{
+    flex:0 0 72vw; max-width:280px; scroll-snap-align:center;
+    background:var(--glass); border:1px solid var(--glass-border); border-radius:24px;
+    backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow:0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.2);
+    padding:18px; display:flex; flex-direction:column; gap:10px; cursor:pointer;
+  }
+  .card img{ width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:16px; display:block; }
+  .card h3{ margin:0; font-size:1.05rem; }
+  .dots{ display:flex; gap:6px; justify-content:center; }
+  .dot{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.3); transition:.2s; }
+  .dot.active{ background:var(--accent2); width:18px; border-radius:3px; }
+
+  .skeleton{ flex:0 0 72vw; max-width:280px; aspect-ratio:3/4; border-radius:24px;
+    background:linear-gradient(100deg, rgba(255,255,255,.05) 30%, rgba(255,255,255,.12) 50%, rgba(255,255,255,.05) 70%);
+    background-size:200% 100%; animation:shimmer 1.4s infinite; }
+  @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+  .contact{ text-align:center; padding-bottom:100px; }
+  .contact h2{ font-size:1.6rem; margin:0 0 10px; }
+  .contact p{ color:var(--text-dim); margin:0 0 22px; }
+  footer{ text-align:center; color:rgba(255,255,255,.35); font-size:.75rem; padding:20px 0 40px; }
+
+  .secnav{ position:fixed; right:14px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:10px; z-index:40; }
+  .secnav button{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.3); border:none; padding:0; }
+  .secnav button.active{ background:var(--accent2); height:22px; border-radius:4px; }
+
+  .lightbox{ position:fixed; inset:0; background:rgba(5,2,12,.92); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:env(safe-area-inset-top,20px) 16px; }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:90vw; max-height:78vh; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  .lb-close,.lb-prev,.lb-next{
+    position:fixed; background:var(--glass); border:1px solid var(--glass-border); color:#fff;
+    width:42px; height:42px; border-radius:50%; font-size:1.1rem; backdrop-filter:blur(10px); cursor:pointer;
+  }
+  .lb-close{ top:calc(env(safe-area-inset-top,16px) + 16px); right:16px; }
+  .lb-prev{ left:12px; top:50%; transform:translateY(-50%); }
+  .lb-next{ right:12px; top:50%; transform:translateY(-50%); }
+</style>
+</head>
+<body>
+
+  <nav class="secnav" id="secnav">
+    <button data-target="hero" class="active" aria-label="Mwanzo"></button>
+    <button data-target="about" aria-label="Kuhusu"></button>
+    <button data-target="work" aria-label="Kazi"></button>
+    <button data-target="contact" aria-label="Wasiliana"></button>
+  </nav>
+
+  <section class="hero" id="hero">
+    <div class="loc">Dar es Salaam, Tanzania</div>
+    <h1>Subra</h1>
+    <p>Usanifu na sanaa ya kidijitali — rangi zinazong'aa, mwendo, na muonekano wa kioo. Kazi isiyotulia.</p>
+    <a class="cta" href="#work">Ona kazi ↓</a>
+  </section>
+
+  <section class="about" id="about">
+    <h2>Kuhusu</h2>
+    <p>Subra ni msanifu na msanii anayeishi Dar es Salaam, akifanya kazi za sanaa ya kidijitali, uundaji wa chapa, na muonekano wa kuona. Anavutiwa na rangi zinazong'aa na nyuso zenye uhai.</p>
+    <div class="tags">
+      <span class="tag">Sanaa ya Kidijitali</span>
+      <span class="tag">Uundaji wa Chapa</span>
+      <span class="tag">Dhana za UI</span>
+      <span class="tag">Michoro</span>
+    </div>
+  </section>
+
+  <section class="work" id="work">
+    <h2>Kazi</h2>
+    <p class="sub">Telezesha kidole kuona zaidi — gusa kipande kukikuza</p>
+    <div class="track" id="track"></div>
+    <div class="dots" id="dots"></div>
+  </section>
+
+  <section class="contact" id="contact">
+    <h2>Tushirikiane</h2>
+    <p>Niko tayari kwa ushirikiano, kazi za kuagizwa, na miradi mipya.</p>
+    <a class="cta" href="mailto:hello@subra.art">Wasiliana nami</a>
+  </section>
+
+  <footer>© Subra — Dar es Salaam</footer>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose">✕</button>
+    <button class="lb-prev" id="lbPrev">‹</button>
+    <img id="lbImg">
+    <button class="lb-next" id="lbNext">›</button>
+  </div>
+
+<script>
+  const EXT = 'jpg';
+  const MAX_CHECK = 50;
+  const titles = {};
+
+  const track = document.getElementById('track');
+  const dotsEl = document.getElementById('dots');
+  let urls = [];
+
+  function fileExists(url){
+    return new Promise(res=>{
+      const img = new Image();
+      img.onload = ()=>res(true);
+      img.onerror = ()=>res(false);
+      img.src = url;
+    });
+  }
+
+  for(let i=0;i<3;i++){
+    const s = document.createElement('div');
+    s.className = 'skeleton';
+    track.appendChild(s);
+  }
+
+  async function loadPics(){
+    let n = 1;
+    while(n <= MAX_CHECK){
+      const url = `pics/${n}.${EXT}`;
+      const ok = await fileExists(url);
+      if(!ok) break;
+      urls.push(url);
+      n++;
+    }
+    track.innerHTML = '';
+    if(urls.length === 0){
+      track.innerHTML = '<p style="padding:30px 10px;color:rgba(255,255,255,.55)">Hakuna picha zilizopatikana katika pics/ — ongeza pics/1.jpg, pics/2.jpg, n.k.</p>';
+      return;
+    }
+    urls.forEach((url,i)=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<img src="${url}" loading="lazy"><h3>${titles[i+1] || 'Kipande ' + (i+1)}</h3>`;
+      card.addEventListener('click', ()=> openLightbox(i));
+      track.appendChild(card);
+    });
+    buildDots();
+  }
+
+  function buildDots(){
+    [...track.children].forEach((_,i)=>{
+      const d = document.createElement('div');
+      d.className = 'dot' + (i===0?' active':'');
+      dotsEl.appendChild(d);
+    });
+    track.addEventListener('scroll', ()=> requestAnimationFrame(updateDots));
+    updateDots();
+  }
+
+  function updateDots(){
+    const cards = [...track.children];
+    const dots = [...dotsEl.children];
+    const center = track.scrollLeft + track.clientWidth/2;
+    let closest = 0, min = Infinity;
+    cards.forEach((c,i)=>{
+      const d = Math.abs((c.offsetLeft + c.offsetWidth/2) - center);
+      if(d < min){ min = d; closest = i; }
+    });
+    dots.forEach((d,i)=> d.classList.toggle('active', i===closest));
+  }
+
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  let lbIndex = 0;
+  function openLightbox(i){ lbIndex = i; lbImg.src = urls[i]; lightbox.classList.add('open'); }
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+  function step(d){ lbIndex = (lbIndex + d + urls.length) % urls.length; lbImg.src = urls[lbIndex]; }
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', ()=>step(-1));
+  document.getElementById('lbNext').addEventListener('click', ()=>step(1));
+  lightbox.addEventListener('click', e=>{ if(e.target === lightbox) closeLightbox(); });
+
+  const navBtns = [...document.querySelectorAll('.secnav button')];
+  navBtns.forEach(b=> b.addEventListener('click', ()=>{
+    document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth'});
+  }));
+  const sections = navBtns.map(b=> document.getElementById(b.dataset.target));
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const idx = sections.indexOf(entry.target);
+        navBtns.forEach((b,i)=> b.classList.toggle('active', i===idx));
+      }
+    });
+  }, { threshold:.5 });
+  sections.forEach(s=> io.observe(s));
+
+  loadPics();
+</script>
+</body>
+</html>
